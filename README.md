@@ -3,6 +3,13 @@ The reults of DAL and related trackers
 
 To save the results for the paper **DAL: A Deep Depth-Aware Long-term Tracke**
 
+**Visualzie Code**
+To visualize the raw results one the RGB image:
+'''
+python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX
+python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX --sequence dog_outside bottle_box --tracker DIMP
+'''
+
 **Princeton benchmark (PTB)**
   - [ATOM](https://arxiv.org/abs/1811.07628)
   - [DiMP](https://github.com/visionml/pytracking)
@@ -11,7 +18,28 @@ To save the results for the paper **DAL: A Deep Depth-Aware Long-term Tracke**
   - other variants of DiMP
 
 **CDTB dataset**
-  - not found in Yanlin's Code 
+  - BACF
+  - blend2track_vot
+  - CADMS
+  - CSRDCF
+  - CSR-depth
+  - dimp50_votd_default_noonline (DAL ???)
+  - dimp50_votd_vot_noonline (DAL ????)
+  - DIMP
+  - ECO
+  - ECOhc
+  - ECO-hc-D
+  - FuCoLoT
+  - KCF
+  - KCF-D
+  - MDNet
+  - MBMD
+  - NCC
+  - OTR
+  - SiamDW_D
+  - SiamDW_D_blend
+  - SiamFC
+  - TLD
 
 **OTB dataset**
   - GT
