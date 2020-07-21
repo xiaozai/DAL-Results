@@ -5,10 +5,11 @@ To save the results for the paper **DAL: A Deep Depth-Aware Long-term Tracke**
 
 **Visualzie Code**
 To visualize the raw results one the RGB image:
-'''
+
+```
 python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX
 python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX --sequence dog_outside bottle_box --tracker DIMP
-'''
+```
 
 **Princeton benchmark (PTB)**
   - [ATOM](https://arxiv.org/abs/1811.07628)
