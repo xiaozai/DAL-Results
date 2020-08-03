@@ -1,5 +1,5 @@
 # DAL-Results
-The reults of DAL and related trackers
+The reults of DAL and related trackers on the PTB, STC, and CDTB becnmarks.
 
 To save the results for the paper **DAL: A Deep Depth-Aware Long-term Tracke**
 
@@ -16,13 +16,13 @@ python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX 
   - [ATOM](https://arxiv.org/abs/1811.07628)
   - [DiMP](https://github.com/visionml/pytracking)
   - [OTR](https://github.com/ugurkart/OTR)
-  - other variants of DiMP
+  - other variants of DiMP, e.g. DiMP-dseg
 
 **CDTB dataset**
   - dimp50_votd_default_noonline (DAL)
   - dimp50_votd_vot_noonline (DAL)
   - DIMP
-  - OTR
+  - OTRdataset
   - SiamDW_D
   - SiamDW_D_blend
   - SiamFC
@@ -42,7 +42,7 @@ python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX 
   - NCC
   - TLD
 
-**OTB dataset**
+**STC rgbd benchmark**
   - GT
   - DAL
   - our (DAL)
@@ -64,18 +64,3 @@ python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX 
   - TR_DCF_ICP
   - TR_DCG_ICP_MV
   - TR_DCF_ICP_MV_smart
-
-**PTB***
-  - DiMP-rgbd-blend2 (DAL)
-  - ATOM
-  - DiMP-dseg
-  - DiMP
-  - OTR
-
-**VOT????**
-  - DSKCF1
-  - DSKCF2
-  - GT
-  - OAPF
-  - PT
-  - STC
