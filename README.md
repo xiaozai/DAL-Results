@@ -12,21 +12,25 @@ python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX 
 ```
 
 **Princeton benchmark (PTB)**
+  - [DAL](https://arxiv.org/abs/1912.00660)
   - [ATOM](https://arxiv.org/abs/1811.07628)
   - [DiMP](https://github.com/visionml/pytracking)
   - [OTR](https://github.com/ugurkart/OTR)
-  - DAL
   - other variants of DiMP
 
 **CDTB dataset**
+  - dimp50_votd_default_noonline (DAL)
+  - dimp50_votd_vot_noonline (DAL)
+  - DIMP
+  - OTR
+  - SiamDW_D
+  - SiamDW_D_blend
+  - SiamFC
   - BACF
   - blend2track_vot
   - CADMS
   - CSRDCF
   - CSR-depth
-  - dimp50_votd_default_noonline (DAL ???)
-  - dimp50_votd_vot_noonline (DAL ????)
-  - DIMP
   - ECO
   - ECOhc
   - ECO-hc-D
@@ -36,34 +40,37 @@ python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX 
   - MDNet
   - MBMD
   - NCC
-  - OTR
-  - SiamDW_D
-  - SiamDW_D_blend
-  - SiamFC
   - TLD
 
 **OTB dataset**
   - GT
   - DAL
+  - our (DAL)
   - DiMP
   - OTR
   - OTR_MVC
+  - dimp50_stc_rgbd
+  - dimp50_stc_rgbd(0.63)
   - CADMS
   - CSR-DCF
   - CSR_FCLT
-  - dimp50_stc_rgbd
-  - dimp50_stc_rgbd(0.63)
   - DSKCF1
   - DSKCF2
   - ECO
   - OAPF
-  - our ???
   - PT
   - STC
   - TR_DCF
   - TR_DCF_ICP
   - TR_DCG_ICP_MV
   - TR_DCF_ICP_MV_smart
+
+**PTB***
+  - DiMP-rgbd-blend2 (DAL)
+  - ATOM
+  - DiMP-dseg
+  - DiMP
+  - OTR
 
 **VOT????**
   - DSKCF1
