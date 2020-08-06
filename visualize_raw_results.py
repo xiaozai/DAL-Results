@@ -6,7 +6,6 @@ import sys
 import matplotlib
 import json
 
-
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -15,19 +14,48 @@ import random
 import argparse
 from webcolors import hex_to_name
 
-def load_trackers_from_list(tracker_list):
+def load_trackers_and_colors(params):
+    ''' Load the list of the specific trackers from the txt or all trackers in the folder'''
     trackers = []
 
-    if os.path.isfile(tracker_list):
-        with open(tracker_list) as f:
-            trackers = f.readlines()
-        trackers = [x.strip() for x in trackers]
-    elif os.path.isdir(tracker_list):
-        trackers = os.listdir(tracker_list)
+    if params.tracker:
+        # if there are specific tracekrs
+        trackers = params.tracker
+    else:
+        tracker_list = os.path.join(params.raw_results_path, 'trackers.txt')
+        if os.path.isfile(tracker_list):
+            with open(tracker_list) as f:
+                trackers = f.readlines()
+            trackers = [x.strip() for x in trackers]
+        elif os.path.isdir(params.raw_results_path):
+            # if no list, get all sub-directories in the raw results folder
+            trackers = [f for f in os.listdir(params.raw_results_path) if os.path.isdir(os.path.join(params.raw_results_path, f))]
+        else:
+            trackers = []
+            print('no trackers')
+    # create random colors for all trackers
+    tracker_colors = ["#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)]) for i in range(len(trackers))] if len(trackers) else []
+    print(trackers)
+    return trackers, tracker_colors, len(trackers)
 
-    return trackers
+def load_sequences_names(params):
+    ''' Load the names of sequences from the folder or the input list '''
+    vids = []
+    if os.path.isdir(params.sequences_path):
+        if params.sequence:
+            vids = params.sequence
+        else:
+            vids = os.listdir(params.sequences_path)
+            if params.dataset == 'CDTB':
+                vids.remove('list.txt')
+            elif params.dataset == 'STC':
+                vids.remove('benchmark_name.txt') # Or can load the seq list from benchmark_name.txt
+                vids.remove('.directory')         # no idea why it is here
+            vids.sort()
+    print('Totally %d sequences '%len(vids))
+    return vids, len(vids) # Totally 80 Sequences for CDTB, 95 seqs for PTB , 36 for STC
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='Please specify the raw results path and the sequences path')
 parser.add_argument('--raw_results_path', default='/home/yan/Desktop/DAL-Results/CDTB/raw_results/',
                     help='the folder where saves the raw results from trackers')
 parser.add_argument('--sequences_path', default='/home/yan/Projects/VOT-RGBD2020/vot-workspace/sequences/',
@@ -38,45 +66,31 @@ parser.add_argument('--sequence', default='', type=str, nargs='+',
                     help='for one specific sequence')
 parser.add_argument('--savefig', default=False, type=bool,
                     help='save the visualized image with predicted bboxes')
+parser.add_argument('--save_path', default='', type=str,
+                    help='save the visualized images with predicted bboxes')
 parser.add_argument('--dataset', default='PTB', type=str,
-                    help=' [PTB, CDTB, STC]')
+                    help='[PTB, CDTB, STC]')
 args = parser.parse_args()
 
 if __name__ == '__main__':
 
     # 1) Loading Trackers and Sequences
-    if args.tracker:
-        trackers = args.tracker
-    else:
-        try:
-            trackers = load_trackers_from_list(os.path.join(args.raw_results_path, 'trackers.txt'))
-        except:
-            trackers = []
-            print('no trackers')
-    print(trackers)
+    trackers, tracker_colors, num_trackers = load_trackers_and_colors(args)
 
-    if len(trackers):
-        # create random colors for all trackers
-        tracker_colors = ["#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)])
-                            for i in range(len(trackers))]
+    if num_trackers:
         # loading sequences
-        if os.path.isdir(args.sequences_path):
-            if args.sequence:
-                vids = args.sequence
-            else:
-                vids = os.listdir(args.sequences_path)
-                if args.dataset == 'CDTB':
-                    vids.remove('list.txt')
-                elif args.dataset == 'STC':
-                    vids.remove('benchmark_name.txt')
-                    vids.remove('.directory')
-                vids.sort()
-            num_vids = len(vids) # 80 Sequences for CDTB, 95 seqs for PTB , 36 for STC
-            
+        vids, num_vids = load_sequences_names(args)
+        if num_vids:
             # 2) Visualize the raw results for each tracker
             for vid, title in enumerate(vids[0:num_vids]):
-                seq_path = args.sequences_path + '{}'.format(title)
-                # get the groundtruth
+
+                if args.savefig and args.save_path:
+                    if not os.path.isdir(os.path.join(args.save_path, title)):
+                        os.mkdir(os.path.join(args.save_path, title))
+
+                seq_path = os.path.join(args.sequences_path, title)
+
+                # get the groundtruth , it is for CDTB dataset, no GT for PTB, and STC has the GT folder for all seqs
                 gt_exists = False
                 if os.path.isfile(os.path.join(seq_path, 'groundtruth.txt')):
                     gt_exists = True
@@ -84,7 +98,7 @@ if __name__ == '__main__':
                 # get the predicted bbox from trackers
                 trackers_bbox = []
                 for tracker in trackers:
-                    # in CDTB (VOT), output files are seqName_001.txt, seqName_001_confidence.txt , seqName_001_time.txt
+                    # in CDTB (VOT challenge), output files are seqName_001.txt, seqName_001_confidence.txt , seqName_001_time.txt
                     if args.dataset == 'CDTB':
                         if os.path.isfile(os.path.join(args.raw_results_path, tracker, title, '{}_001.txt'.format(title))):
                             prediction_txt = os.path.join(args.raw_results_path, tracker, title, '{}_001.txt'.format(title))
@@ -102,9 +116,11 @@ if __name__ == '__main__':
                         try:
                             prediction_bbox = np.loadtxt(prediction_txt, delimiter=',')
                         except:
+                            # Some trackers output predicted bbox like (x    y     w    h), e.g. DiMP and DAL in STC
                             prediction_bbox = np.loadtxt(prediction_txt, delimiter='\t')
                         trackers_bbox.append(prediction_bbox)
-                # visualzie
+
+                # difference folders for rgb images in each dataset
                 if args.dataset == 'CDTB':
                     im_path = os.path.join(seq_path, 'color')
                 elif args.dataset == 'PTB':
@@ -142,19 +158,28 @@ if __name__ == '__main__':
                 plt.tight_layout()
 
                 for frame_i, frame_name in enumerate(frames[0:len(frames)]):
+
                     im = cv2.cvtColor(cv.imread(os.path.join(im_path, frames[frame_i])), cv.COLOR_BGR2RGB)
 
                     ax.cla()
                     ax.imshow(im)
 
+                    # Add GT bbox if exists
                     if gt_exists:
                         if len(gt_bbox[frame_i])==4:
-                            vis_gt_bbox = patches.Rectangle((gt_bbox[frame_i][0], gt_bbox[frame_i][1]),
-                                                            gt_bbox[frame_i][2], gt_bbox[frame_i][3],
-                                                            linewidth=2, edgecolor='r', facecolor='none')
+                            if args.dataset == 'CDTB' or args.dataset == 'STC':
+                                gt_x, gt_y, gt_w, gt_h = gt_bbox[frame_i]
+                            elif args.dataset == 'PTB':
+                                gt_x, gt_y, gt_xr, gt_yr = gt_bbox[frame_i]
+                                gt_w = gt_xr - gt_x
+                                gt_h = gt_yr - gt_y
+                            else:
+                                gt_x, gt_y, gt_w, gt_h = 0, 0, 0, 0
+                                print('gt dataset not exists..')
+                            vis_gt_bbox = patches.Rectangle((gt_x, gt_y), gt_w, gt_h, linewidth=2, edgecolor='r', facecolor='none')
                             ax.add_patch(vis_gt_bbox)
                         elif len(gt_bbox[frame_i])==8:
-                            print('GT is polygon')
+                            print('GT is polygon, not implemented yet ...')
 
                         # add GT labels
                         plt.text(gt_bbox[frame_i][0], gt_bbox[frame_i][1], '0', fontsize=8, color='r')
@@ -164,26 +189,23 @@ if __name__ == '__main__':
 
                     for tracker_i in range(len(trackers)):
                         if len(trackers_bbox[tracker_i][frame_i])==4:
-                            # # For PTB , (target_top_left_x,target_top_left_y,target_down_right_x,target_down_right_y)
                             if args.dataset == 'PTB':
-                                x = trackers_bbox[tracker_i][frame_i][0]
-                                y = trackers_bbox[tracker_i][frame_i][1]
-                                w = trackers_bbox[tracker_i][frame_i][2] - trackers_bbox[tracker_i][frame_i][0]
-                                h = trackers_bbox[tracker_i][frame_i][3] - trackers_bbox[tracker_i][frame_i][1]
-                            # # For CDTB and also STC , (x, y, w, h)
+                                # For PTB , (target_top_left_x,target_top_left_y,target_down_right_x,target_down_right_y)
+                                x, y, xr, yr = trackers_bbox[tracker_i][frame_i]
+                                w = xr - x
+                                h = yr - y
                             elif args.dataset == 'CDTB' or args.dataset == 'STC':
-                                x = trackers_bbox[tracker_i][frame_i][0]
-                                y = trackers_bbox[tracker_i][frame_i][1]
-                                w = trackers_bbox[tracker_i][frame_i][2]
-                                h = trackers_bbox[tracker_i][frame_i][3]
+                                # For CDTB and also STC , (x, y, w, h)
+                                x, y, w, h = trackers_bbox[tracker_i][frame_i]
                             else:
                                 x, y, w, h = 0, 0, 0, 0
+                                print('prediction dataset not exists..')
 
                             vis_bbox = patches.Rectangle((x, y), w, h, linewidth=2, edgecolor=tracker_colors[tracker_i], facecolor='none')
                             ax.add_patch(vis_bbox)
                             plt.text(trackers_bbox[tracker_i][frame_i][0], trackers_bbox[tracker_i][frame_i][1], ' %d'%(tracker_i+1), fontsize=6, color=tracker_colors[tracker_i])
                         elif len(trackers_bbox[tracker_i][frame_i])==8:
-                            print('Prediction is Polygon')
+                            print('Prediction is Polygon, not implemented yet ...')
 
                         # add tracker labels
                         plt.text(40, (tracker_i+1)*20+10, ' %d - %s'%(tracker_i+1, trackers[tracker_i]), fontsize=8, color='k')
@@ -194,3 +216,7 @@ if __name__ == '__main__':
                     ax.axis('equal')
                     plt.draw()
                     plt.pause(0.001)
+
+                    # save current fig
+                    if args.savefig and args.save_path:
+                        plt.savefig(os.path.join(args.save_path, title, frames[frame_i]))

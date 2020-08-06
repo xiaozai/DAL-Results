@@ -4,11 +4,19 @@ The reults of DAL and related trackers on the PTB, STC, and CDTB becnmarks.
 To save the results for the paper **DAL: A Deep Depth-Aware Long-term Tracke**
 
 **Visualzie Code**
-To visualize the raw results one the RGB image:
-
+To visualize the raw results one the RGB image on all sequences:
 ```
-python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX
-python visualize_raw_results.py --raw_results_path XXXXX --sequences_path XXXXX --sequence dog_outside bottle_box --tracker DIMP
+python visualize_raw_results.py --raw_results_path XXXXX --dataset CDTB --sequences_path XXXXX
+```
+
+To run specific trackers on the specific sequences :
+```
+python visualize_raw_results.py --raw_results_path XXXXX --dataset STC --sequences_path XXXXX --sequence dog_outside bottle_box --tracker DIMP
+```
+
+To save the figures:
+```
+python visualize_raw_results.py --raw_results_path xxxxx --dataset PTB --sequences_path XXXXX --savefig True --save_path XXXXX
 ```
 
 **Princeton benchmark (PTB)**
