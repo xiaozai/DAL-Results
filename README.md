@@ -30,7 +30,7 @@ python visualize_raw_results.py --raw_results_path xxxxx --dataset PTB --sequenc
   - dimp50_votd_default_noonline (DAL)
   - dimp50_votd_vot_noonline (DAL)
   - DIMP
-  - OTRdataset
+  - OTR
   - SiamDW_D
   - SiamDW_D_blend
   - SiamFC
