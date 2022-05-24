@@ -27,8 +27,8 @@ python visualize_raw_results.py --raw_results_path xxxxx --dataset PTB --sequenc
   - other variants of DiMP, e.g. DiMP-dseg
 
 **CDTB dataset**
-  - dimp50_votd_default_noonline (DAL)
-  - dimp50_votd_vot_noonline (DAL)
+  - dimp50_votd_default_noonline
+  - dimp50_votd_vot_noonline
   - DIMP
   - OTR
   - SiamDW_D
